@@ -9,6 +9,8 @@ using Alexa.NET.Response;
 using Newtonsoft.Json;
 using Alexa.NET.Request.Type;
 using System.Text;
+using System.IO;
+using System.Reflection;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -49,12 +51,12 @@ namespace StoriesTeller
         {
             List<string> storyName = new List<string>();
             storyName.Add("Well come to Vietname's stories. Would you want to hear story?");
-            storyName.Add("1. The legend of Son Tinh and Thuy Tinh");
-            storyName.Add("2. The Golden Star Fruit Tree");
-            storyName.Add("3. The Saint Giong");
-            storyName.Add("Four, The Legendary Origins of the Viet People");
-            storyName.Add("Five, Legend of the Water Melon");
-            storyName.Add("Six, The Golden Star Fruit Tree");
+            storyName.Add("One, The legend of Son Tinh and Thuy Tinh.");
+            storyName.Add("Two, The Golden Star Fruit Tree.");
+            storyName.Add("Three, The Saint Giong.");
+            storyName.Add("Four, The Legendary Origins of the Viet People.");
+            storyName.Add("Five, Legend of the Water Melon.");
+            storyName.Add("Six, The Golden Star Fruit Tree.");
             return storyName;
 
         }
@@ -73,8 +75,12 @@ namespace StoriesTeller
             response.Response.ShouldEndSession = false;
             IOutputSpeech innerResponse = null;
             var log = context.Logger;
-            log.LogLine($"Skill Request Object:");
-            log.LogLine(JsonConvert.SerializeObject(input));
+
+            //log.LogLine($"Skill Request Object input:");
+            //log.LogLine(JsonConvert.SerializeObject(input));
+
+            //log.LogLine($"Skill Request Object context:");
+            //log.LogLine(JsonConvert.SerializeObject(context));
 
             var allResources = GetResources();
             var resource = allResources.FirstOrDefault();
@@ -82,7 +88,6 @@ namespace StoriesTeller
 
             if (input.GetRequestType() == typeof(LaunchRequest))
             {
-                log.LogLine($"Default LaunchRequest made: 'Alexa, open stories VN");
                 innerResponse = new PlainTextOutputSpeech();
                 StringBuilder builder = new StringBuilder();
                 foreach(string s in storyName)
@@ -100,42 +105,34 @@ namespace StoriesTeller
                 switch (intentRequest.Intent.Name)
                 {
                     case "AMAZON.CancelIntent":
-                        log.LogLine($"AMAZON.CancelIntent: send StopMessage");
+                        //log.LogLine($"AMAZON.CancelIntent: send StopMessage");
                         innerResponse = new PlainTextOutputSpeech();
                         (innerResponse as PlainTextOutputSpeech).Text = resource.StopMessage;
                         response.Response.ShouldEndSession = true;
                         break;
                     case "AMAZON.StopIntent":
-                        log.LogLine($"AMAZON.StopIntent: send StopMessage");
+                        //log.LogLine($"AMAZON.StopIntent: send StopMessage");
                         innerResponse = new PlainTextOutputSpeech();
                         (innerResponse as PlainTextOutputSpeech).Text = resource.StopMessage;
                         response.Response.ShouldEndSession = true;
                         break;
                     case "AMAZON.HelpIntent":
-                        log.LogLine($"AMAZON.HelpIntent: send HelpMessage");
+                        //log.LogLine($"AMAZON.HelpIntent: send HelpMessage");
                         innerResponse = new PlainTextOutputSpeech();
                         (innerResponse as PlainTextOutputSpeech).Text = resource.HelpMessage;
                         break;
                     case "GetFactIntent":
-                        log.LogLine($"GetFactIntent sent: send new fact");                        
+                        //log.LogLine($"GetFactIntent sent: send new fact");                        
                         innerResponse = new PlainTextOutputSpeech();
-                        (innerResponse as PlainTextOutputSpeech).Text = @"Saint Giong symbolizes the patriotic spirit of the Vietnamese and this saint is among the four immortals, with profound belief in the spiritual life of the ethnic Vietnamese.
-An invasion by the Ân enemy ravaged the country during the reign of the sixth Hùng King. Everywhere villages were set on fire and the population massacred. Everywhere the drum rolls of the war mingled with the cries of the victims.
-
-The King sent messengers out to every corner to discover a hero capable of saving the homeland.
-
-At this time there lived a woman in Ke Dong who was no longer very young but still celibate. One day, on crossing the garden planted with aubergines, she saw the enormous footprint of a man. One does not know why but she had the idea to compare the footprint with her own. Scarcely had she put down her foot then she felt a strange sensation.
-
-Some time after, she found that she was pregnant. Ashamed, she abandoned her native village and went to live in the forest. At the end of twelve months she brought a handsome boy into the world.";
-                        //emitNewFact(resource, false);
+                        (innerResponse as PlainTextOutputSpeech).Text = GetStoryFromResources("The Legendary Origins of the Viet People", log);                            
                         break;
                     case "GetNewFactIntent":
-                        log.LogLine($"GetFactIntent sent: send new fact");
+                        //log.LogLine($"GetFactIntent sent: send new fact");
                         innerResponse = new PlainTextOutputSpeech();
-                        (innerResponse as PlainTextOutputSpeech).Text = emitNewFact(resource, false);
+                        (innerResponse as PlainTextOutputSpeech).Text = GetStoryFromResources("The Saint Giong", log);
                         break;
                     default:
-                        log.LogLine($"Unknown intent: " + intentRequest.Intent.Name);
+                        //log.LogLine($"Unknown intent: " + intentRequest.Intent.Name);
                         innerResponse = new PlainTextOutputSpeech();
                         (innerResponse as PlainTextOutputSpeech).Text = resource.HelpReprompt;
                         break;
@@ -144,17 +141,53 @@ Some time after, she found that she was pregnant. Ashamed, she abandoned her nat
 
             response.Response.OutputSpeech = innerResponse;
             response.Version = "1.0";
-            log.LogLine($"Skill Response Object...");
-            log.LogLine(JsonConvert.SerializeObject(response));
+            //log.LogLine($"Skill Response Object...");
+            //log.LogLine(JsonConvert.SerializeObject(response));
             return response;
         }
 
-        public string emitNewFact(FactResource resource, bool withPreface)
+        public string GetStoryFromResources(string storyName, ILambdaLogger logger = null)
         {
-            Random r = new Random();
-            if (withPreface)
-                return resource.GetFactMessage + resource.Facts[r.Next(resource.Facts.Count)];
-            return resource.Facts[r.Next(resource.Facts.Count)];
+            String text = "Sorry, I can't get story.";
+            try
+            {
+                var assembly = typeof(StoriesTeller.Function).GetTypeInfo().Assembly;
+                string resourceName = string.Format(@"StoriesTeller.Stories.{0}.txt", storyName);
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    using (var reader = new StreamReader(stream))
+                    {
+                        text = reader.ReadToEnd();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                if (logger != null)
+                    logger.LogLine(string.Format("The file could not be read: {0}", e.Message));
+            }
+            return text;
+        }
+
+        private string GetStory(string storyName, ILambdaLogger logger)
+        {
+            String text = "Sorry, I can't get story.";
+            try
+            {   // Open the text file using a stream reader.
+                //string path = Path.Combine(Environment.CurrentDirectory, "Some\\Path.txt")
+                string path = System.IO.Path.GetFullPath(string.Format(@"{0}\Stories\{1}.txt", Directory.GetCurrentDirectory(), storyName));
+                var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                using (StreamReader sr = new StreamReader(fileStream, Encoding.UTF8))
+                {
+                    // Read the stream to a string, and write the string to the console.
+                    text = sr.ReadToEnd();
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogLine(string.Format("The file could not be read: {0}", e.Message));
+            }
+            return text;
         }
     }
 }
