@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +8,7 @@ using Alexa.NET.Request;
 using Alexa.NET.Response;
 using Newtonsoft.Json;
 using Alexa.NET.Request.Type;
+using System.Text;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -20,11 +21,11 @@ namespace StoriesTeller
         {
             List<FactResource> resources = new List<FactResource>();
             FactResource enUSResource = new FactResource("en-US");
-            enUSResource.SkillName = "American Science Facts for testing";
+            enUSResource.SkillName = "Stories Teller";
             enUSResource.GetFactMessage = "Here's your science fact: ";
             enUSResource.HelpMessage = "You can say tell me a science fact, or, you can say exit... What can I help you with?";
             enUSResource.HelpReprompt = "You can say tell me a science fact to start";
-            enUSResource.StopMessage = "Goodbye!";
+            enUSResource.StopMessage = "Goodbye! See you again. Tạm biệt Quỳnh Anh";
             enUSResource.Facts.Add("A year on Mercury is just 88 days long.");
             enUSResource.Facts.Add("Despite being farther from the Sun, Venus experiences higher temperatures than Mercury.");
             enUSResource.Facts.Add("Venus rotates counter-clockwise, possibly because of a collision in the past with an asteroid.");
@@ -42,6 +43,22 @@ namespace StoriesTeller
             resources.Add(enUSResource);
             return resources;
         }
+
+
+        public List<string> GetStoryName()
+        {
+            List<string> storyName = new List<string>();
+            storyName.Add("Well come to Vietname's stories. Would you want to hear story?");
+            storyName.Add("1. The legend of Son Tinh and Thuy Tinh");
+            storyName.Add("2. The Golden Star Fruit Tree");
+            storyName.Add("3. The Saint Giong");
+            storyName.Add("Four, The Legendary Origins of the Viet People");
+            storyName.Add("Five, Legend of the Water Melon");
+            storyName.Add("Six, The Golden Star Fruit Tree");
+            return storyName;
+
+        }
+
 
         /// <summary>
         /// A simple function that takes a string and does a ToUpper
@@ -61,12 +78,19 @@ namespace StoriesTeller
 
             var allResources = GetResources();
             var resource = allResources.FirstOrDefault();
+            var storyName = GetStoryName();
 
             if (input.GetRequestType() == typeof(LaunchRequest))
             {
-                log.LogLine($"Default LaunchRequest made: 'Alexa, open Science Facts");
+                log.LogLine($"Default LaunchRequest made: 'Alexa, open stories VN");
                 innerResponse = new PlainTextOutputSpeech();
-                (innerResponse as PlainTextOutputSpeech).Text = emitNewFact(resource, true);
+                StringBuilder builder = new StringBuilder();
+                foreach(string s in storyName)
+                {
+                    builder.AppendLine(s);
+                }
+
+                (innerResponse as PlainTextOutputSpeech).Text = builder.ToString();
 
             }
             else if (input.GetRequestType() == typeof(IntentRequest))
@@ -93,9 +117,17 @@ namespace StoriesTeller
                         (innerResponse as PlainTextOutputSpeech).Text = resource.HelpMessage;
                         break;
                     case "GetFactIntent":
-                        log.LogLine($"GetFactIntent sent: send new fact");
+                        log.LogLine($"GetFactIntent sent: send new fact");                        
                         innerResponse = new PlainTextOutputSpeech();
-                        (innerResponse as PlainTextOutputSpeech).Text = emitNewFact(resource, false);
+                        (innerResponse as PlainTextOutputSpeech).Text = @"Saint Giong symbolizes the patriotic spirit of the Vietnamese and this saint is among the four immortals, with profound belief in the spiritual life of the ethnic Vietnamese.
+An invasion by the Ân enemy ravaged the country during the reign of the sixth Hùng King. Everywhere villages were set on fire and the population massacred. Everywhere the drum rolls of the war mingled with the cries of the victims.
+
+The King sent messengers out to every corner to discover a hero capable of saving the homeland.
+
+At this time there lived a woman in Ke Dong who was no longer very young but still celibate. One day, on crossing the garden planted with aubergines, she saw the enormous footprint of a man. One does not know why but she had the idea to compare the footprint with her own. Scarcely had she put down her foot then she felt a strange sensation.
+
+Some time after, she found that she was pregnant. Ashamed, she abandoned her native village and went to live in the forest. At the end of twelve months she brought a handsome boy into the world.";
+                        //emitNewFact(resource, false);
                         break;
                     case "GetNewFactIntent":
                         log.LogLine($"GetFactIntent sent: send new fact");
