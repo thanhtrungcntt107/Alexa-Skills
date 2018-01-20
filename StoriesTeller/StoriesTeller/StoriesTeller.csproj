@@ -5,7 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Stories\Legend of the Water Melon.txt" />
+    <None Remove="Stories\The Golden Star Fruit Tree.txt" />
+    <None Remove="Stories\The legend of Son Tinh and Thuy Tinh.txt" />
     <None Remove="Stories\The Legendary Origins of the Viet People.txt" />
+    <None Remove="Stories\The Moon Boy.txt" />
     <None Remove="Stories\The Saint Giong.txt" />
   </ItemGroup>
 
@@ -21,9 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Stories\Legend of the Water Melon.txt" />
+    <EmbeddedResource Include="Stories\The Golden Star Fruit Tree.txt" />
+    <EmbeddedResource Include="Stories\The legend of Son Tinh and Thuy Tinh.txt" />
     <EmbeddedResource Include="Stories\The Legendary Origins of the Viet People.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Stories\The Moon Boy.txt" />
     <EmbeddedResource Include="Stories\The Saint Giong.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>

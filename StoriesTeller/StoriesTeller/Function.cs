@@ -170,9 +170,9 @@ namespace StoriesTeller
                         log.LogLine($"GetStoryIntent sent: send new fact");
                         innerResponse = new PlainTextOutputSpeech();
                         if (!string.IsNullOrEmpty(intentRequest.Intent.Slots["GetStoryByNameIntent"].Value))
-                            (innerResponse as PlainTextOutputSpeech).Text = GetStoryFromResources(intentRequest.Intent.Slots["GetStoryByNameIntent"].Value, log);
+                            (innerResponse as PlainTextOutputSpeech).Text = GetStoryFromResources(GetStoryNameByName(intentRequest.Intent.Slots["GetStoryByNameIntent"].Value), log);
                         else if (!string.IsNullOrEmpty(intentRequest.Intent.Slots["GetStoryByOrderNumberIntent"].Value))
-                            (innerResponse as PlainTextOutputSpeech).Text = GetStoryFromResources(GetStoryNameByOrderNumber(intentRequest.Intent.Slots["GetStoryByNameIntent"].Value), log);
+                            (innerResponse as PlainTextOutputSpeech).Text = GetStoryFromResources(GetStoryNameByOrderNumber(intentRequest.Intent.Slots["GetStoryByOrderNumberIntent"].Value), log);
                         break;
                     case "GetNextStoryIntent":
                         //GetNextStoryIntent
