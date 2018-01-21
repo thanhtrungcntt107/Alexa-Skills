@@ -4,10 +4,10 @@ using StoriesTeller;
 namespace UnitTestStoriesTeller
 {
     [TestClass]
-    public class UnitTest1
+    public class UnitStoriesTeller
     {
         [TestMethod]
-        public void TestMethod1()
+        public void TestMethodGetStoryResource()
         {
             Function func = new Function();
             func.GetStoryFromResources("The Legendary Origins of the Viet People", null);
