@@ -124,7 +124,7 @@
     <value>You can say. Open say hi. Start say hi.</value>
   </data>
   <data name="StopMessage" xml:space="preserve">
-    <value>Goodby. See you again!</value>
+    <value>Goodby. See you again! Tạm biệt. Hẹn gặp lại.</value>
   </data>
   <data name="WelcomeMessage" xml:space="preserve">
     <value>Welcome say hi. I am robot chatting. You can talk with me anything you want.</value>

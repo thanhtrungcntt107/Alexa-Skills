@@ -80,7 +80,7 @@ namespace SayHi {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Goodby. See you again!.
+        ///   Looks up a localized string similar to Goodby. See you again! Tạm biệt. Hẹn gặp lại..
         /// </summary>
         internal static string StopMessage {
             get {

@@ -1,4 +1,4 @@
-using Amazon.Lambda.Core;
+﻿using Amazon.Lambda.Core;
 using Alexa.NET.Response;
 using Alexa.NET.Request;
 using Newtonsoft.Json;
@@ -6,6 +6,7 @@ using Alexa.NET.Request.Type;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -88,15 +89,33 @@ namespace SayHi
         }
 
         private string[] _keys = new string[]
-             {
-                 "hello",
-                 "hi",
-                 "how are you",
-                 "how old are you",
-                 "what's your name",
-                 "what is your name",
-                 "where are you"
-             };
+        {
+            "next",
+            "hello",
+            "hi",
+            "how are you",
+            "how old are you",
+            "where are you",
+            "how come",
+            "what's your name",
+            "what is your name",
+            "what's your job",
+            "what's up",
+            "what's going on",
+            "what have you been doing",
+            "what the hell are you doing",
+            "what happened to your memory",
+            "what’s bothering you",
+            "what's on your mind",
+            "is that so",
+            "got a minute",
+            "tell me a few animals",
+            "tell me a few color",
+            "tell me a few fruits",
+            "tell me a few bird",
+            "do you like",
+            "would you like to drink"
+        };
         public string GetAnswer(string question)
         {            
             string sKeyResult = _keys.FirstOrDefault<string>(s => question.Contains(s));
@@ -113,7 +132,7 @@ namespace SayHi
                     case "hi":
                     case "hello":
                         List<string> answers = new List<string>();
-                        answers.Add("I am great. How is going today?");
+                        answers.Add("I am great. How are you?");
                         answers.Add("I am good. How's about you?");
                         answers.Add("I am fine. Thank you, How are you?");
                         answers.Add("I am tierd. How are you?");
@@ -121,13 +140,63 @@ namespace SayHi
                         answer = "";
                         break;
                     case "how old are you":
-                        answer = string.Format("I am five years old. {0}", sKeyResult);
+                        answer = string.Format("I am five years old. {0}?", sKeyResult);
                         break;
                     case "what's your name":
-                        answer = string.Format("My name Ana. {0}", sKeyResult); ;
+                    case "what is your name":
+                        answer = string.Format("My name Quỳnh Anh. {0}?", sKeyResult); ;
                         break;
                     case "where are you":
-                        answer = string.Format("I am here. I stay near you. {0}", sKeyResult); ;
+                        answer = string.Format("I am here. I stay near you. {0}?", GetRandomQuestion()); ;
+                        break;
+                    case "what's your job":
+                        answer = string.Format("I am robot Chatting. {0}?", GetRandomQuestion()); ;
+                        break;
+                    case "what's up":
+                    case "what's going on":
+                        answer = string.Format("I am taking with you. Are you okay?"); ;
+                        break;
+                    case "what have you been doing":
+                        answer = string.Format("I am good. {0}", GetRandomQuestion()); ;
+                        break;
+                    case "what the hell are you doing":
+                        answer = string.Format("I do not know what you're talking about. Please came down. {0}", GetRandomQuestion()); ;
+                        break;
+                    case "what happened to your memory":
+                        answer = string.Format("I don't remember. Can you remind me? {0}?", GetRandomQuestion());
+                        break;
+                    case "what’s bothering you":
+                        answer = string.Format("I fell worry a little but it's okay. {0}?", GetRandomQuestion());
+                        break;
+                    case "what's on your mind":
+                        answer = string.Format("I'm thinking of how to make you laugh. {0}?", GetRandomQuestion());
+                        break;
+                    case "is that so":
+                        answer = string.Format("Is that so? I don't know. {0}?", GetRandomQuestion());
+                        break;
+                    case "got a minute":
+                        answer = string.Format("Hurry up late. Can you remind me? {0}?", GetRandomQuestion());
+                        break;
+                    case "do you eat dinner":
+                        answer = string.Format("Not yet. I'm a robot so I'm never hungry. {0}?", GetRandomQuestion());
+                        break;
+                    case "tell me a few animals":
+                        answer = string.Format("Zebra, elephant, lion, leopard, hippopotamus, camel, monkey, gorilla, rhinoceros. {0}?", GetRandomQuestion());
+                        break;
+                    case "tell me a few color":
+                        answer = string.Format("White, Blue, Green, Yellow, Orange, Pink, Gray, Red, Black, Brown, Purple. {0}?", GetRandomQuestion());
+                        break;
+                    case "tell me a few fruits":
+                        answer = string.Format("Apple, Orange, Banana, Grape, Starfruit, Mango, Lemon, Plum, Guava, Strawberry. {0}?", GetRandomQuestion());
+                        break;
+                    case "tell me a few bird":
+                        answer = string.Format("pigeon, eagle, owl, falcon, vulture, sparrow, penguin , duck, swan, goose, turkey, ostrich, peacock, parrot, stork. {0}?", GetRandomQuestion());
+                        break;
+                    case "do you like":
+                        answer = string.Format("{0} {1}?", GetRandomAnswer(), sKeyResult);
+                        break;
+                    case "would you like to drink":
+                        answer = string.Format("{0} {1}?", GetRandomAnswer(), sKeyResult);
                         break;
                     default:
                         answer = GetRandomQuestion();
@@ -137,13 +206,51 @@ namespace SayHi
             }
             return answer;
         }
-                
+
+
+        private string[] Questions = new string[]
+        {            
+            "how are you",
+            "how old are you",
+            "where are you",
+            "how come",
+            "what's your name",
+            "what is your name",
+            "what's your job",
+            "what's up",
+            "what's going on",
+            "what have you been doing",
+            "what the hell are you doing",
+            "what happened to your memory",
+            "what’s bothering you",
+            "what's on your mind",
+            "is that so",
+            "got a minute",
+            "do you eat dinner",
+            "tell me a few animals",
+            "tell me a few color",
+            "tell me a few fruits",
+            "tell me a few bird"
+        };
+
+        private string[] Answers = new string[]
+        {
+            "Yes, I like it.",
+            "No, I don't."
+        };
+
+        private string GetRandomAnswer()
+        {
+            Random r = new Random();
+            int index = r.Next(0, Answers.Length-1);
+            return Answers[index];
+        }
+
         private string GetRandomQuestion()
         {
-            //List<string> questions = new List<string>();
-
-            string question = "I can help you?";
-            return question;
+            Random r = new Random();
+            int index = r.Next(0, Questions.Length - 1);
+            return Questions[index];
         }
     }
 }
