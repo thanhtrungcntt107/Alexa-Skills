@@ -128,7 +128,7 @@ namespace SayHi
             {
                 switch (sKeyResult.ToLower())
                 {
-                    case "how are you?":
+                    case "how are you":
                     case "hi":
                     case "hello":
                         List<string> answers = new List<string>();
@@ -137,7 +137,9 @@ namespace SayHi
                         answers.Add("I am fine. Thank you, How are you?");
                         answers.Add("I am tierd. How are you?");
                         answers.Add("I am not feeling well. And you?");
-                        answer = "";
+                        Random random = new Random();
+                        int index = random.Next(0,5);
+                        answer = string.Format("{0} {1}?", answers[index], GetRandomQuestion());
                         break;
                     case "how old are you":
                         answer = string.Format("I am five years old. {0}?", sKeyResult);
